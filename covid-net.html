@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="covid-net.css" type="text/css">
+    <!-- <script src="covid-net.js"></script>  -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-Net | An X-ray Image Classifier for COVID-19</title>
+</head>
+
+
+<body>
+    <h1>COVID-Net</h1>
+
+    <div class="info">
+        <h2>Instructions</h2>
+        <p>This application predicts COVID-19 <br> from chest X-rays. 
+            Use the upload button to <br> upload an image of an X-ray and use  
+            the <br> predict button to get a prediction. The app will <br> tell you  
+            how likely the person has COVID-19 <br> based on the X-ray.
+            The app can only use PNG <br> images. If you upload a JEPG image 
+            or any <br> other type of image it will not work. </p>
+        <h2>Results</h2>
+        <p>The app can detect COVID-19 in 88% of cases <br> where the disease is present. </p>
+    </div>
+    
+
+    <button id="predict-button" class="predict-button">Predict</button>
+    <div class="predictions">
+        <p><strong>Predictions</strong></p>
+        <p>Normal: <span id="normal-prediction"></span></p>
+        <p>COVID-19: <span id="covid-prediction"></span></p>
+    </div>
+
+  
+    <label for="image-selector" class="image-selector-label">Upload File</label>
+    <input name="image-selector" id="image-selector" type="file" class="image-selector" >
+    <img id="selected-image" src="" class="selected-image"/>
+
+
+    <!-- This code was adapted from a tutorial series provided 
+     by the owners of DeepLizard. They should receive most of the credit.
+
+     DeepLizard (2018) VGG16-Cats-and-Dogs (Version 1.0) [Source code] 
+     https://deeplizard.com/learn/video/eCz_DTtUBfo -->
+    
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        let base64Image;
+        $("#image-selector").change(function(){
+            let reader =  new FileReader();
+            reader.onload = function(e) {
+                let dataURL = reader.result;
+                $('#selected-image').attr("src", dataURL);
+                base64Image = dataURL.replace("data:image/png;base64,","");
+                console.log(base64Image);
+            }
+            reader.readAsDataURL($("#image-selector")[0].files[0]);
+            $("#normal-prediction").text("");
+            $("#covid-prediction").text("");
+        });
+
+        $("#predict-button").click(function(event){
+            let message = {
+                image: base64Image
+            }
+            console.log(message);
+            $.post("http://192.168.1.98:5000/covid-net", JSON.stringify(message), function(response){
+                $("#normal-prediction").text(response.prediction.normal.toFixed(3) * 100 + '%');
+                $("#covid-prediction").text(response.prediction.covid.toFixed(3) * 100 + '%');
+                console.log(response);
+            });
+        });
+    </script>
+</body>
+</html>
