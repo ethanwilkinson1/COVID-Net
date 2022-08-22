@@ -11,9 +11,7 @@ from flask import Flask
 app = Flask(__name__)
 
 ### This code was adapted from a tutorial series, provided 
-### by the owners of DeepLizard. They should receive most of the credit.
-### DeepLizard (2018) VGG16-Cats-and-Dogs (Version 1.0) [Source code]. 
-### https://deeplizard.com/learn/video/XgzxH6G-ufA 
+### by the owners of DeepLizard. 
 
 def get_model():
     global model
